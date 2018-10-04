@@ -19,7 +19,7 @@ System.register(['lodash', './response_parser'], function(exports_1) {
                     this.$q = $q;
                     this.id = instanceSettings.id;
                     this.name = instanceSettings.name;
-                    this.url = 'https://www.googleapis.com/bigquery/v2/projects/chrome-ux-report/datasets/';
+                    this.url = 'https://www.googleapis.com/bigquery/v2/projects/inapp-infrastructure-190215/datasets/';
                     this.authToken = instanceSettings.jsonData.authToken;
                     this.responseParser = new response_parser_1.default(this.$q);
                 }
@@ -31,16 +31,17 @@ System.register(['lodash', './response_parser'], function(exports_1) {
                     return this.backendSrv.datasourceRequest(options);
                 };
                 BigQueryDatasource.prototype.doQueryRequest = function (options) {
-                    options.url = this.url;
+                    options.url = 'https://www.googleapis.com/bigquery/v2/projects/inapp-infrastructure-190215/queries';
                     options.headers = {
                         Authorization: "Bearer " + this.authToken,
                     };
                     options.method = 'POST';
                     options.data = {
                         useLegacySql: false,
-                        query: this.query,
+                        query: "select sum(cost), FORMAT_TIMESTAMP('%Y/%m/%d', export_time) as exporttime, service.description from `inapp-infrastructure-190215.InAppBillingExport.gcp_billing_export_v1_015F6F_B1E514_A875E2`  where invoice.month = FORMAT_DATE('%Y%m', CURRENT_DATE()) group by exporttime, service.description order by exporttime;",
                     };
-                    return this.backendSrv.datasourceRequest(options);
+             
+	 	    return this.backendSrv.datasourceRequest(options).then(this.responseParser.processQueryResult);
                 };
                 BigQueryDatasource.prototype.testDatasource = function () {
                     return this.doRequest({

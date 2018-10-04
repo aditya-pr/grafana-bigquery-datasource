@@ -14,7 +14,7 @@ export default class BigQueryDatasource {
   constructor(instanceSettings, private backendSrv, private templateSrv, private $q) {
     this.id = instanceSettings.id;
     this.name = instanceSettings.name;
-    this.url = 'https://www.googleapis.com/bigquery/v2/projects/chrome-ux-report/datasets/';
+    this.url = 'https://www.googleapis.com/bigquery/v2/projects/inapp-infrastructure-190215/datasets/';
     this.authToken = instanceSettings.jsonData.authToken;
     this.responseParser = new ResponseParser(this.$q);
   }

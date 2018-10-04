@@ -35,17 +35,8 @@ System.register(['lodash', 'app/plugins/sdk'], function(exports_1) {
                             this.target.rawSql = defaultQuery;
                         }
                     }
-                    this.panelCtrl.events.on('data-received', this.onDataReceived.bind(this), $scope);
                     this.panelCtrl.events.on('data-error', this.onDataError.bind(this), $scope);
                 }
-                BigQueryQueryCtrl.prototype.onDataReceived = function (dataList) {
-                    this.lastQueryMeta = null;
-                    this.lastQueryError = null;
-                    var anySeriesFromQuery = lodash_1.default.find(dataList, { refId: this.target.refId });
-                    if (anySeriesFromQuery) {
-                        this.lastQueryMeta = anySeriesFromQuery.meta;
-                    }
-                };
                 BigQueryQueryCtrl.prototype.onDataError = function (err) {
                     if (err.data && err.data.results) {
                         var queryRes = err.data.results[this.target.refId];

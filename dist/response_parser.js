@@ -13,33 +13,31 @@ System.register(['lodash'], function(exports_1) {
                 }
                 ResponseParser.prototype.processQueryResult = function (res) {
                     var data = [];
-                    if (!res.data.results) {
+		    console.log(res.data);
+                    if (!res.data.rows) {
                         return { data: data };
                     }
-                    for (var key in res.data.results) {
-                        var queryRes = res.data.results[key];
-                        if (queryRes.series) {
-                            for (var _i = 0, _a = queryRes.series; _i < _a.length; _i++) {
-                                var series = _a[_i];
-                                data.push({
-                                    target: series.name,
-                                    datapoints: series.points,
-                                    refId: queryRes.refId,
-                                    meta: queryRes.meta,
-                                });
-                            }
-                        }
-                        if (queryRes.tables) {
-                            for (var _b = 0, _c = queryRes.tables; _b < _c.length; _b++) {
-                                var table = _c[_b];
-                                table.type = 'table';
-                                table.refId = queryRes.refId;
-                                table.meta = queryRes.meta;
-                                data.push(table);
-                            }
-                        }
-                    }
-                    return { data: data };
+		    services = {}
+		    for (var key in res.data.rows) {
+              		var queryRes = res.data.rows[key]["f"];
+              		services[queryRes[2]["v"]] = (services[queryRes[2]["v"]] + parseFloat(queryRes[0]["v"])) || parseFloat(queryRes[0]["v"]);
+              		index = function(data, target) {
+                		for (var key in data) {
+                  			if (data[key]["target"] == target) return key;
+                		}
+                		return -1;
+             		 }(data, queryRes[2]["v"])
+              		if (index != -1) {
+                		data[index].datapoints.push([services[queryRes[2]["v"]], new Date(queryRes[1]["v"]).getTime()])
+             		} else {
+                		data.push({
+                  			target: queryRes[2]["v"],
+                  			datapoints: [[services[queryRes[2]["v"]], new Date(queryRes[1]["v"]).getTime()]],
+                		});
+              		}
+            	    }
+
+		    return { data: data };
                 };
                 ResponseParser.prototype.parseMetricFindQueryResult = function (refId, results) {
                     if (!results || results.data.length === 0 || results.data.results[refId].meta.rowCount === 0) {
